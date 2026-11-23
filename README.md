@@ -51,7 +51,7 @@ jfm-printhub/
 ├─ frontend/                React app (Vite)
 │  └─ src/ app/ pages/ components/{ui,layout,charts,landing,shared}/ features/ lib/ stores/ styles/
 ├─ supabase/storage-setup.sql   creates the 3 storage buckets
-├─ render.yaml              Render blueprint for the API
+├─ render.yaml              Render blueprint (free API + free static site)
 └─ docs/screenshots/
 ```
 
@@ -180,17 +180,27 @@ Errors always use the same JSON shape: `{ timestamp, status, error, code, messag
 
 ## Deployment
 
-| Piece | Where | Notes |
+### Free ($0/month) setup — the default
+
+| Piece | Where | Free-tier limits that matter |
 |---|---|---|
-| Database / Auth / Storage | **Supabase** | Run `storage-setup.sql`. The backend applies Flyway on boot. |
-| API | **Render**, Railway or Fly.io | `backend/Dockerfile`; `render.yaml` included. Set `SPRING_PROFILES_ACTIVE=prod` and every variable above. Health check: `/actuator/health`. Swagger is off in prod unless `SWAGGER_ENABLED=true`. |
-| Frontend | **Vercel** or Netlify | Root `frontend/`, build `npm run build`, output `dist`. `vercel.json` / `netlify.toml` add the SPA rewrite and immutable asset caching. |
+| Database / Auth / Storage | **Supabase Free** | 500 MB database, 1 GB file storage, 5 GB egress. Pauses after 7 days of no activity, which `supabase/keep-alive.sql` prevents. No automatic backups, so download one from **Settings → Backup** regularly. |
+| API | **Render Free** web service (`render.yaml` → `jfm-printhub-api`) | 512 MB RAM, 0.1 CPU. Sleeps after 15 min idle; waking takes about 1 minute or more. 750 instance hours per month. |
+| Frontend | **Render Free** static site (`render.yaml` → `jfm-printhub-web`) | Always on, served from a CDN, no hour limit. |
 
-After deploying:
-- Add the frontend URL to `CORS_ALLOWED_ORIGINS`.
-- Add `<frontend>/reset-password` to Supabase Auth redirect URLs.
+Steps:
+1. Push to GitHub. In Render, choose **New → Blueprint** and pick this repo. Render creates both services from `render.yaml`.
+2. Fill the secret env vars for both services. Set `VITE_API_BASE_URL` to the API URL and `CORS_ALLOWED_ORIGINS` to the static site URL.
+3. In Supabase Auth → URL Configuration, set the Site URL to the static site URL and add `<site>/reset-password` to the redirect URLs.
+4. Edit the URL in `supabase/keep-alive.sql`, then run it in the SQL Editor. It pings the API every 10 minutes from 6 AM to 10 PM Manila time.
 
-> Free-tier API hosts sleep when idle. The landing page renders immediately from bundled default content and replaces it with live content when the API wakes up.
+Vercel's free Hobby plan is for non-commercial use only, so a business system like this belongs on its Pro plan. The Render static site (or Cloudflare Pages / Netlify, using `netlify.toml`) is the $0 option. `vercel.json` is still included for a paid Vercel setup.
+
+### Paid upgrade path
+- No API sleep: change `plan: free` to `plan: starter` in `render.yaml`.
+- No database pausing, plus daily backups: Supabase Pro.
+
+> While the API is waking up, the landing page still renders right away from bundled default content, then switches to live content once the API responds.
 
 ## Performance & accessibility notes
 
