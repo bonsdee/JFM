@@ -37,7 +37,7 @@ function Stepper({ label, value, onChange, min = 1, max = MAX_FT, step = 1, unit
  * backend's shared pricing engine (/api/public/quote) — identical to POS and job orders. While a request
  * is in flight, a local preview using the same published rate keeps the number moving.
  */
-export function TarpEstimator({ service }) {
+export function TarpEstimator({ service, heading = {} }) {
   const [w, setW] = useState(3)
   const [h, setH] = useState(5)
   const [qty, setQty] = useState(1)
@@ -78,7 +78,7 @@ export function TarpEstimator({ service }) {
   return (
     <section id="pricing" className="scroll-mt-24 py-24">
       <div className="mx-auto max-w-6xl px-5">
-        <SectionHeading title="Price your tarp in seconds" subtitle={`${peso(rate)} per square foot, ${peso(min)} minimum per tarp. Add a rush for same-day release.`} />
+        <SectionHeading title={heading.title} subtitle={heading.subtitle || `${peso(rate)} per square foot, ${peso(min)} minimum per tarp. Add a rush for same-day release.`} />
 
         <div className="mt-12 grid overflow-hidden rounded-[32px] border border-line/70 bg-surface shadow-soft lg:grid-cols-[0.9fr_1.1fr]">
           <div className="space-y-6 p-6 sm:p-10">

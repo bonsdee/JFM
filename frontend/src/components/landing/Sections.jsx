@@ -32,11 +32,11 @@ export function TrustStrip({ stats = [] }) {
   )
 }
 
-export function ServicesGrid({ services = [] }) {
+export function ServicesGrid({ services = [], heading = {} }) {
   return (
     <section id="services" className="relative scroll-mt-24 py-24">
       <div className="mx-auto max-w-6xl px-5">
-        <SectionHeading title="Everything you need printed, under one roof" subtitle="Walk in with a file, walk out with a finished piece — or send it ahead and we'll have it ready." />
+        <SectionHeading title={heading.title} subtitle={heading.subtitle} />
         <Reveal className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3" stagger={0.05}>
           {services.map((s) => {
             const Icon = iconFor(s.icon)
@@ -90,12 +90,12 @@ export function Marquee({ items = [] }) {
   )
 }
 
-export function Faq({ items = [] }) {
+export function Faq({ items = [], heading = {} }) {
   const [open, setOpen] = useState(0)
   return (
     <section id="faq" className="scroll-mt-24 py-24">
       <div className="mx-auto grid max-w-6xl gap-12 px-5 lg:grid-cols-[0.8fr_1.2fr]">
-        <SectionHeading title="Questions we hear at the counter" subtitle="Still unsure? Send us a message below — we usually reply within the hour during shop hours." />
+        <SectionHeading title={heading.title} subtitle={heading.subtitle} />
         <div className="space-y-3">
           {items.map((f, i) => {
             const isOpen = open === i

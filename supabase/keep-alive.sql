@@ -19,7 +19,7 @@ select cron.schedule(
   'jfm-keepalive',
   '*/10 22,23,0-13 * * *',
   $$ select net.http_get(
-       url := 'https://YOUR-API-NAME.onrender.com/actuator/health',
+       url := 'https://jfm-printhub-api-znz2.onrender.com/actuator/health',
        timeout_milliseconds := 90000
      ); $$
 );

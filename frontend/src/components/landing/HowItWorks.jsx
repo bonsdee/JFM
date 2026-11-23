@@ -7,7 +7,7 @@ import { Reveal, revealItem } from './motion'
 const ICONS = [FileUp, CheckCircle2, Printer, Store]
 
 /** Four sequential steps joined by an SVG path that draws itself as you scroll. */
-export function HowItWorks({ steps = [] }) {
+export function HowItWorks({ steps = [], heading = {} }) {
   const ref = useRef(null)
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start 80%', 'end 60%'] })
   const progress = useSpring(scrollYProgress, { stiffness: 90, damping: 24 })
@@ -15,7 +15,7 @@ export function HowItWorks({ steps = [] }) {
   return (
     <section id="how" ref={ref} className="relative scroll-mt-24 overflow-hidden bg-surface py-24">
       <div className="mx-auto max-w-6xl px-5">
-        <SectionHeading title="From file to finished print" subtitle="Four steps, usually the same day." align="center" />
+        <SectionHeading title={heading.title} subtitle={heading.subtitle} align="center" />
         <div className="relative mt-16">
           <svg className="absolute left-0 top-7 hidden h-24 w-full md:block" viewBox="0 0 1000 100" preserveAspectRatio="none" aria-hidden>
             <path d="M60 50 C 220 -10, 300 110, 375 50 S 540 -10, 625 50 S 800 110, 940 50" fill="none" stroke="rgb(var(--line))" strokeWidth="3" strokeDasharray="2 10" strokeLinecap="round" />

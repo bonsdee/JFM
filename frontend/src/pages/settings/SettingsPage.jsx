@@ -1,12 +1,11 @@
 import { useEffect, useState } from 'react'
-import { useNavigate, useSearchParams } from 'react-router-dom'
+import { Navigate, useNavigate, useSearchParams } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import toast from 'react-hot-toast'
 import { DatabaseBackup, ImageOff, KeyRound, LogOut, Monitor } from 'lucide-react'
 import { Button, Card, CardHeader, DescriptionList, Field, Input, PageHeader, Skeleton, Tabs, Textarea, Toggle } from '@/components/ui'
 import { FileDrop } from '@/components/shared/FileDrop'
-import { WebsiteContentEditor } from './WebsiteContentEditor'
 import { useSaveSettings, useSettings } from '@/features/admin'
 import { passwordSchema } from '@/pages/auth/ResetPasswordPage'
 import { supabase } from '@/lib/supabaseClient'
@@ -18,7 +17,6 @@ const TABS = [
   { value: 'business', label: 'Business profile' },
   { value: 'receipt', label: 'Receipt & tax' },
   { value: 'inventory', label: 'Inventory' },
-  { value: 'website', label: 'Website content' },
   { value: 'account', label: 'Account' },
   { value: 'backup', label: 'Backup' },
 ]
@@ -95,7 +93,7 @@ export default function SettingsPage() {
         </Card>
       ))}
 
-      {tab === 'website' && <WebsiteContentEditor />}
+      {tab === 'website' && <Navigate to="/app/website" replace />}
       {tab === 'account' && <AccountSettings />}
       {tab === 'backup' && <BackupSettings />}
     </>

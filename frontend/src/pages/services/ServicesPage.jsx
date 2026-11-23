@@ -8,7 +8,7 @@ import { useCategories } from '@/features/products'
 import { ADDON_TYPES, PRICING_MODELS, SERVICE_ICONS, UNIT_LABEL } from '@/lib/constants'
 import { num, peso } from '@/lib/format'
 
-function priceSummary(s) {
+export function priceSummary(s) {
   switch (s.pricingModel) {
     case 'FIXED': return `${peso(s.basePrice)} ${s.unitLabel || 'per package'}`
     case 'PER_SQFT': return `${peso(s.rate)} / sq ft · min ${peso(s.minCharge)}`
@@ -68,7 +68,7 @@ const blank = {
   piecesPerBatch: 1, rushFeePercent: 0, unitLabel: '', icon: 'Printer', showOnWebsite: true, active: true, sortOrder: 0, materials: [], addons: [],
 }
 
-function ServiceDrawer({ service, onClose }) {
+export function ServiceDrawer({ service, onClose }) {
   const save = useSaveService()
   const { data: categories } = useCategories('SERVICE')
   const [f, setF] = useState(blank)

@@ -1,6 +1,6 @@
 import {
   BarChart3, Boxes, ClipboardList, FolderTree, History, Inbox, LayoutDashboard, Layers, PackagePlus, Printer,
-  Receipt, ScanLine, Settings, ShoppingCart, Truck, Users, Wallet, ArrowLeftRight, ShieldCheck, Repeat,
+  Receipt, ScanLine, Settings, ShoppingCart, Truck, Users, Wallet, ArrowLeftRight, ShieldCheck, Repeat, Globe,
 } from 'lucide-react'
 
 /** Sidebar groups; also feeds the Ctrl/Cmd+K command palette. */
@@ -32,7 +32,8 @@ export const NAV = [
       { to: '/app/reports', label: 'Reports', icon: BarChart3, keywords: 'profit loss analytics export' },
       { to: '/app/inquiries', label: 'Inquiries', icon: Inbox, keywords: 'messages contact', badge: 'inquiries' },
       { to: '/app/audit', label: 'Audit log', icon: ShieldCheck },
-      { to: '/app/settings', label: 'Settings', icon: Settings, keywords: 'website content backup password' },
+      { to: '/app/website', label: 'Website', icon: Globe, keywords: 'landing page content services hero faq gallery contact hours' },
+      { to: '/app/settings', label: 'Settings', icon: Settings, keywords: 'business profile receipt backup password' },
     ],
   },
 ]

@@ -18,6 +18,12 @@ export default function LandingPage() {
   // Bundled services only show while the first request is in flight; afterwards the real list (even if empty) wins.
   const services = data.services ?? FALLBACK_SITE.services
   const business = { ...FALLBACK_SITE.business, ...(data.business || {}) }
+  // Saved titles win; a blank title falls back to the default, a blank subtitle hides it.
+  const heading = (key) => {
+    const def = FALLBACK_SITE.content.sections[key]
+    const saved = content.sections?.[key] || {}
+    return { title: saved.title?.trim() || def.title, subtitle: saved.subtitle ?? def.subtitle }
+  }
   const tarp = services.find((s) => s.pricingModel === 'PER_SQFT') || services.find((s) => s.slug === 'tarpaulin')
 
   useEffect(() => {
@@ -31,13 +37,13 @@ export default function LandingPage() {
       <main>
         <Hero hero={content.hero} business={business} />
         <TrustStrip stats={content.stats} />
-        {services.length > 0 && <ServicesGrid services={services} />}
-        {tarp && <TarpEstimator service={tarp} />}
-        <HowItWorks steps={content.howItWorks} />
-        <Gallery items={content.gallery} />
+        {services.length > 0 && <ServicesGrid services={services} heading={heading('services')} />}
+        {tarp && <TarpEstimator service={tarp} heading={heading('estimator')} />}
+        <HowItWorks steps={content.howItWorks} heading={heading('howItWorks')} />
+        <Gallery items={content.gallery} heading={heading('gallery')} />
         <Marquee items={content.marquee} />
-        <Faq items={content.faq} />
-        <Contact contact={content.contact} services={services} />
+        <Faq items={content.faq} heading={heading('faq')} />
+        <Contact contact={content.contact} services={services} heading={heading('contact')} />
       </main>
       <Footer business={business} />
     </div>

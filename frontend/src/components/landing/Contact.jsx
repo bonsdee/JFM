@@ -18,7 +18,7 @@ const schema = z.object({
   website: z.string().max(0).optional(), // honeypot
 }).refine((d) => d.email || d.phone, { message: 'Add an email or phone so we can reply', path: ['phone'] })
 
-export function Contact({ contact = {}, services = [] }) {
+export function Contact({ contact = {}, services = [], heading = {} }) {
   const send = useSendInquiry()
   const [sent, setSent] = useState(false)
   const { register, handleSubmit, reset, setValue, formState: { errors } } = useForm({
@@ -53,7 +53,7 @@ export function Contact({ contact = {}, services = [] }) {
     <section id="contact" className="scroll-mt-24 bg-surface py-24">
       <div className="mx-auto grid max-w-6xl gap-10 px-5 lg:grid-cols-2">
         <div>
-          <SectionHeading title="Drop by or send us your file" subtitle="Tell us what you need and we'll reply with a quote and the earliest pickup time." />
+          <SectionHeading title={heading.title} subtitle={heading.subtitle} />
           <ul className="mt-8 space-y-3">
             {rows.map((r) => (
               <li key={r.label} className="flex items-center gap-3 text-[15px]">

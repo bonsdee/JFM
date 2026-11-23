@@ -35,6 +35,7 @@ const Reports = lazy(() => import('@/pages/reports/ReportsPage'))
 const Inquiries = lazy(() => import('@/pages/inquiries/InquiriesPage'))
 const Audit = lazy(() => import('@/pages/audit/AuditLogPage'))
 const Settings = lazy(() => import('@/pages/settings/SettingsPage'))
+const Website = lazy(() => import('@/pages/website/WebsitePage'))
 const NotFound = lazy(() => import('@/pages/NotFoundPage'))
 
 const top = (el) => <Suspense fallback={<FullPageLoader />}>{el}</Suspense>
@@ -78,6 +79,7 @@ export const router = createBrowserRouter([
       { path: 'reports', element: page(<Reports />) },
       { path: 'inquiries', element: page(<Inquiries />) },
       { path: 'audit', element: page(<Audit />) },
+      { path: 'website', element: page(<Website />) },
       { path: 'settings', element: page(<Settings />) },
       { path: '*', element: page(<NotFound />) },
     ],

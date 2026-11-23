@@ -22,7 +22,7 @@ public class SettingsService {
 
     /** Content keys the landing page understands. */
     public static final Set<String> CONTENT_KEYS =
-            Set.of("hero", "stats", "howItWorks", "faq", "gallery", "marquee", "contact", "pricing");
+            Set.of("hero", "stats", "howItWorks", "faq", "gallery", "marquee", "contact", "pricing", "sections");
 
     private final BusinessSettingsRepository settingsRepository;
     private final SiteContentRepository contentRepository;

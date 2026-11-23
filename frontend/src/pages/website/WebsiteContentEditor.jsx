@@ -1,9 +1,12 @@
 import { useEffect, useState } from 'react'
-import { ArrowDown, ArrowUp, ExternalLink, Plus, Trash2 } from 'lucide-react'
-import { Button, Card, CardHeader, Field, Input, Skeleton, Tabs, Textarea } from '@/components/ui'
+import { ArrowDown, ArrowUp, Layers, Pencil, Plus, Trash2 } from 'lucide-react'
+import { Badge, Button, Card, CardHeader, EmptyState, Field, Input, Skeleton, Tabs, Textarea, Toggle } from '@/components/ui'
 import { FileDrop } from '@/components/shared/FileDrop'
 import { useSaveContent, useSiteContent } from '@/features/admin'
 import { FALLBACK_SITE } from '@/components/landing/fallbackContent'
+import { iconFor } from '@/components/landing/serviceIcons'
+import { useServices, useUpdateWebsiteServices } from '@/features/services'
+import { ServiceDrawer, priceSummary } from '@/pages/services/ServicesPage'
 
 /** Reorderable list of objects. fields: [{ key, label, type?: 'textarea'|'number', placeholder? }] */
 function ListEditor({ items, onChange, fields, newItem, addLabel = 'Add item', renderExtra }) {
@@ -36,6 +39,7 @@ function ListEditor({ items, onChange, fields, newItem, addLabel = 'Add item', r
 }
 
 const SECTIONS = [
+  { value: 'services', label: 'Services' },
   { value: 'hero', label: 'Hero' },
   { value: 'stats', label: 'Stats' },
   { value: 'howItWorks', label: 'How it works' },
@@ -43,19 +47,97 @@ const SECTIONS = [
   { value: 'gallery', label: 'Gallery' },
   { value: 'marquee', label: 'Marquee' },
   { value: 'contact', label: 'Contact' },
+  { value: 'sections', label: 'Section titles' },
+]
+/** Tabs saved as site_content blocks (Services saves straight to the service catalog). */
+const CONTENT_SECTIONS = SECTIONS.filter((s) => s.value !== 'services')
+
+const HEADING_FIELDS = [
+  { key: 'services', label: 'Services' },
+  { key: 'estimator', label: 'Tarp price estimator', subtitleHint: 'Leave blank to show the current rate and minimum automatically' },
+  { key: 'howItWorks', label: 'How it works' },
+  { key: 'gallery', label: 'Gallery' },
+  { key: 'faq', label: 'FAQ' },
+  { key: 'contact', label: 'Contact' },
 ]
 
-/** Website Content editor — every landing page block is editable here (served by /api/public/site). */
+/** Services tab: which services the landing page shows, in what order. Changes save immediately. */
+function WebsiteServices() {
+  const { data, isLoading } = useServices(false)
+  const update = useUpdateWebsiteServices()
+  const [editing, setEditing] = useState(null)
+
+  if (isLoading) return <Skeleton className="h-64 rounded-card" />
+  const list = data || []
+  const shown = list.filter((s) => s.showOnWebsite && s.active).length
+
+  const move = (i, d) => {
+    const next = [...list]
+    const [x] = next.splice(i, 1)
+    next.splice(i + d, 0, x)
+    const changes = next.map((service, idx) => ({ service, patch: { sortOrder: (idx + 1) * 10 } }))
+      .filter(({ service, patch }) => service.sortOrder !== patch.sortOrder)
+    if (changes.length) update.mutate(changes)
+  }
+
+  return (
+    <div className="space-y-4">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <p className="text-sm text-muted">
+          {shown} of {list.length} shown on the website, in this order. Edit a service to change its name, description, icon or price.
+        </p>
+        <Button size="sm" icon={Plus} onClick={() => setEditing({})}>Add service</Button>
+      </div>
+      {!list.length && (
+        <EmptyState icon={Layers} title="No services yet" message="Services you add here appear on the landing page and in the price estimator."
+          action={<Button icon={Plus} onClick={() => setEditing({})}>Add service</Button>} />
+      )}
+      <div className="space-y-3">
+        {list.map((s, i) => {
+          const Icon = iconFor(s.icon)
+          return (
+            <div key={s.id} className="flex flex-wrap items-center gap-4 rounded-2xl border border-line/70 p-4">
+              <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-primary-50 text-primary dark:bg-primary/15"><Icon className="h-5 w-5" aria-hidden /></span>
+              <div className="min-w-0 flex-1 basis-56">
+                <div className="flex flex-wrap items-center gap-2">
+                  <p className="font-semibold">{s.name}</p>
+                  {!s.active && <Badge tone="warning">Inactive, so hidden</Badge>}
+                </div>
+                <p className="tabular text-xs text-muted">{priceSummary(s)}</p>
+                {s.description && <p className="mt-1 line-clamp-2 text-sm text-muted">{s.description}</p>}
+              </div>
+              <div className="flex items-center gap-2">
+                <Toggle checked={s.showOnWebsite} disabled={update.isPending} label="On website"
+                  onChange={(v) => update.mutate([{ service: s, patch: { showOnWebsite: v } }])} />
+                <Button variant="ghost" size="icon-sm" disabled={i === 0 || update.isPending} onClick={() => move(i, -1)} aria-label={`Move ${s.name} up`}><ArrowUp className="h-4 w-4" /></Button>
+                <Button variant="ghost" size="icon-sm" disabled={i === list.length - 1 || update.isPending} onClick={() => move(i, 1)} aria-label={`Move ${s.name} down`}><ArrowDown className="h-4 w-4" /></Button>
+                <Button variant="secondary" size="sm" icon={Pencil} onClick={() => setEditing(s)}>Edit</Button>
+              </div>
+            </div>
+          )
+        })}
+      </div>
+      <ServiceDrawer service={editing} onClose={() => setEditing(null)} />
+    </div>
+  )
+}
+
+/** Website editor: every landing page block is editable here (served by /api/public/site). */
 export function WebsiteContentEditor() {
   const { data, isLoading } = useSiteContent()
   const save = useSaveContent()
-  const [section, setSection] = useState('hero')
+  const [section, setSection] = useState('services')
   const [drafts, setDrafts] = useState({})
 
   useEffect(() => {
     if (!data) return
     const map = Object.fromEntries(data.map((b) => [b.key, b.content]))
-    setDrafts(Object.fromEntries(SECTIONS.map((s) => [s.value, map[s.value] ?? FALLBACK_SITE.content[s.value]])))
+    setDrafts(Object.fromEntries(CONTENT_SECTIONS.map((s) => {
+      const fallback = FALLBACK_SITE.content[s.value]
+      // Section titles merge per section, so blocks added later still get their defaults.
+      if (s.value === 'sections') return [s.value, Object.fromEntries(Object.keys(fallback).map((k) => [k, { ...fallback[k], ...(map.sections?.[k] || {}) }]))]
+      return [s.value, map[s.value] ?? fallback]
+    })))
   }, [data])
 
   if (isLoading || !drafts.hero) return <Skeleton className="h-96 rounded-card" />
@@ -64,10 +146,11 @@ export function WebsiteContentEditor() {
 
   return (
     <Card>
-      <CardHeader title="Website content" subtitle="Changes appear on the public landing page within a couple of minutes."
-        action={<a href="/" target="_blank" rel="noreferrer"><Button variant="secondary" size="sm" icon={ExternalLink}>View site</Button></a>} />
+      <CardHeader title="Landing page" subtitle="Published changes appear on the public site within about 2 minutes." />
       <div className="space-y-5 p-5">
         <Tabs value={section} onChange={setSection} tabs={SECTIONS} />
+
+        {section === 'services' && <WebsiteServices />}
 
         {section === 'hero' && (
           <div className="grid gap-4 sm:grid-cols-2">
@@ -118,9 +201,26 @@ export function WebsiteContentEditor() {
           </div>
         )}
 
+        {section === 'sections' && (
+          <div className="space-y-3">
+            <p className="text-sm text-muted">The heading and short line above each part of the page. A blank title uses the default; a blank subtitle hides it.</p>
+            {HEADING_FIELDS.map((h) => (
+              <div key={h.key} className="grid gap-3 rounded-2xl border border-line/70 p-4 sm:grid-cols-2">
+                <p className="text-sm font-semibold sm:col-span-2">{h.label}</p>
+                <Field label="Title"><Input value={value[h.key]?.title ?? ''} placeholder={FALLBACK_SITE.content.sections[h.key].title}
+                  onChange={(e) => set({ ...value, [h.key]: { ...value[h.key], title: e.target.value } })} /></Field>
+                <Field label="Subtitle" hint={h.subtitleHint}><Textarea rows={2} value={value[h.key]?.subtitle ?? ''}
+                  onChange={(e) => set({ ...value, [h.key]: { ...value[h.key], subtitle: e.target.value } })} /></Field>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {section !== 'services' && (
         <div className="flex justify-end border-t border-line pt-4">
           <Button loading={save.isPending} onClick={() => save.mutate({ key: section, content: drafts[section] })}>Publish {SECTIONS.find((s) => s.value === section).label.toLowerCase()}</Button>
         </div>
+        )}
       </div>
     </Card>
   )

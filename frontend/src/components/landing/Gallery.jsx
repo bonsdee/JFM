@@ -42,7 +42,7 @@ function Tile({ item, onOpen }) {
   )
 }
 
-export function Gallery({ items }) {
+export function Gallery({ items, heading = {} }) {
   const list = items?.length ? items : PLACEHOLDERS
   const [index, setIndex] = useState(-1)
   const open = index >= 0
@@ -62,7 +62,7 @@ export function Gallery({ items }) {
   return (
     <section id="gallery" className="scroll-mt-24 py-24">
       <div className="mx-auto max-w-6xl px-5">
-        <SectionHeading title="Recent work from the shop floor" subtitle={items?.length ? 'A few favorites our customers picked up this month.' : 'Sample layouts — the owner can replace these with real photos from the dashboard.'} />
+        <SectionHeading title={heading.title} subtitle={items?.length ? heading.subtitle : 'Sample layouts — real photos of our work are coming soon.'} />
         <Reveal className="mt-12 columns-1 gap-4 sm:columns-2 lg:columns-3" stagger={0.06}>
           {list.map((item, i) => <Tile key={i} item={item} onOpen={() => setIndex(i)} />)}
         </Reveal>

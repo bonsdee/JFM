@@ -50,6 +50,15 @@ export const FALLBACK_SITE = {
       ],
       mapEmbedUrl: 'https://www.google.com/maps?q=14.5995,120.9842&z=15&output=embed',
     },
+    // Section titles and subtitles. An empty estimator subtitle shows the live rate and minimum instead.
+    sections: {
+      services: { title: 'Everything you need printed, under one roof', subtitle: "Walk in with a file, walk out with a finished piece — or send it ahead and we'll have it ready." },
+      estimator: { title: 'Price your tarp in seconds', subtitle: '' },
+      howItWorks: { title: 'From file to finished print', subtitle: 'Four steps, usually the same day.' },
+      gallery: { title: 'Recent work from the shop floor', subtitle: 'A few favorites our customers picked up this month.' },
+      faq: { title: 'Questions we hear at the counter', subtitle: 'Still unsure? Send us a message below — we usually reply within the hour during shop hours.' },
+      contact: { title: 'Drop by or send us your file', subtitle: "Tell us what you need and we'll reply with a quote and the earliest pickup time." },
+    },
   },
   services: [
     { slug: 'tarpaulin', name: 'Tarpaulin Printing', description: 'Vibrant eco-solvent tarps for events, business signage and birthdays.', pricingModel: 'PER_SQFT', startingPrice: 15, unitLabel: 'per sq ft', icon: 'Image', rushFeePercent: 25, minCharge: 150, addons: [] },
