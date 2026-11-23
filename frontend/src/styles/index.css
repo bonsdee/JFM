@@ -1,0 +1,60 @@
+@import '@fontsource-variable/plus-jakarta-sans';
+@import '@fontsource-variable/inter';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ---------- Design tokens (RGB triplets for Tailwind alpha support) ---------- */
+@layer base {
+  :root {
+    --bg: 248 250 252;       /* #F8FAFC */
+    --surface: 255 255 255;
+    --subtle: 241 245 249;   /* slate-100 */
+    --line: 226 232 240;     /* slate-200 */
+    --ink: 30 41 59;         /* slate-800 */
+    --muted: 100 116 139;    /* slate-500 */
+    --primary: 99 102 241;   /* #6366F1 */
+    color-scheme: light;
+  }
+  .dark {
+    --bg: 11 15 26;
+    --surface: 19 25 41;
+    --subtle: 28 36 56;
+    --line: 41 51 74;
+    --ink: 226 232 240;
+    --muted: 148 163 184;
+    --primary: 129 140 248;
+    color-scheme: dark;
+  }
+
+  html { -webkit-tap-highlight-color: transparent; scroll-behavior: smooth; }
+  body { font-family: theme('fontFamily.sans'); font-feature-settings: 'cv11', 'ss01'; }
+  h1, h2, h3, h4 { font-family: theme('fontFamily.display'); letter-spacing: -0.02em; }
+
+  :focus-visible { outline: 2px solid rgb(var(--primary)); outline-offset: 2px; border-radius: 10px; }
+  ::selection { background: rgb(99 102 241 / 0.2); }
+
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; }
+  }
+}
+
+@layer components {
+  .card { @apply rounded-card border border-line/70 bg-surface shadow-soft; }
+  .tabular { font-variant-numeric: tabular-nums; }
+  .text-gradient { @apply bg-brand bg-clip-text text-transparent; }
+  .scrollbar-thin { scrollbar-width: thin; }
+  .label { @apply mb-1.5 block text-sm font-medium text-ink; }
+}
+
+/* ---------- Thermal receipt print layout ---------- */
+@media print {
+  body * { visibility: hidden; }
+  .print-area, .print-area * { visibility: visible; }
+  .print-area { position: absolute; inset: 0 auto auto 0; }
+  .print-58 { width: 58mm; }
+  .print-80 { width: 80mm; }
+  @page { margin: 2mm; }
+}

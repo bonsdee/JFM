@@ -1,0 +1,5 @@
+# Opt-in demo data: products, services, suppliers, job orders, expenses and ~60 days of sales.
+# Only use on an empty database (e.g. a throwaway Supabase project for screenshots).
+spring:
+  flyway:
+    locations: classpath:db/migration,classpath:db/seed

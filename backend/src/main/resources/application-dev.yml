@@ -1,0 +1,10 @@
+# Local development (no sample data).
+# To load the 60-day demo dataset into an EMPTY database, run with both profiles:
+#   SPRING_PROFILES_ACTIVE=dev,demo mvn spring-boot:run
+spring:
+  jpa:
+    show-sql: false
+
+logging:
+  level:
+    com.jfmprinthub: DEBUG

@@ -1,0 +1,18 @@
+# Production: schema + default content only, no sample data.
+spring:
+  flyway:
+    locations: classpath:db/migration
+  datasource:
+    hikari:
+      maximum-pool-size: ${DB_POOL_SIZE:8}
+
+springdoc:
+  swagger-ui:
+    enabled: ${SWAGGER_ENABLED:false}
+  api-docs:
+    enabled: ${SWAGGER_ENABLED:false}
+
+logging:
+  level:
+    root: INFO
+    com.jfmprinthub: INFO
